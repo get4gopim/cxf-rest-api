@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://cxf.apache.org/jaxrs
+        http://cxf.apache.org/schemas/jaxrs.xsd 
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <context:component-scan base-package="com.avaya.ept.ups.rest"/>
+
+	<!--  Apache CXF RESTful init -->
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+    
+    <!-- <bean id="errorHandlerInterceptor" class="com.avaya.ept.ups.rest.exception.ErrorHandlerInterceptor" /> -->
+    <bean id="exceptionMapper" class="com.avaya.ept.ups.rest.exception.EndPointExceptionMapper"/>
+    <bean id="securityExceptionMapper" class="com.avaya.ept.ups.rest.exception.SecurityExceptionMapper"/>
+
+	<bean id="landingPadService" class="com.avaya.ept.ups.rest.service.LandingPadServiceImpl"/>
+
+	<!-- Rest Container Definition -->
+    <jaxrs:server id="restContainer" address="/">
+        <jaxrs:serviceBeans>
+            <ref bean="landingPadService"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+            <entry key="xml" value="application/xml"/>
+        </jaxrs:extensionMappings>
+        <!-- <jaxrs:inFaultInterceptors>
+        	<ref bean="errorHandlerInterceptor" />
+        </jaxrs:inFaultInterceptors>
+        <jaxrs:outFaultInterceptors>
+        	<ref bean="errorHandlerInterceptor" />
+        </jaxrs:outFaultInterceptors> -->
+        <jaxrs:providers>
+        	<ref bean="exceptionMapper" />
+        	<ref bean="securityExceptionMapper" />
+            <!-- <ref bean="jaxbXmlProvider"/> -->
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <!-- Webservice message handlers
+    <bean id="jaxbXmlProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+        <property name="jaxbElementClassNames" ref="elements"/>
+    </bean> -->
+
+	<!-- Marshalling Entities 
+    <util:list id="elements">
+        <value>com.avaya.ept.ups.rest.domain.CacheLandingPadNumber</value>
+        <value>com.avaya.ept.ups.rest.domain.CacheTransferNumber</value>
+        <value>com.avaya.ept.ups.rest.domain.DummyResponse</value>
+        <value>com.avaya.ept.ups.rest.domain.ErrorEntity</value>
+    </util:list>-->
+    
+</beans>
